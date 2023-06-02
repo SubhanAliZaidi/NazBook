@@ -6,3 +6,44 @@
 	height: 40vmin;
 	pointer-events: none;
 }
+
+.formclass{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: calc(100vh - (100vh - 75px));
+  flex-direction: column;
+  max-width: 800px;
+  min-height: calc(100vh - 92px);
+}
+
+.noteui{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100vh;
+}
+
+.noteui1{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0px 50px 50px 50px;
+  min-height: 100%;
+  text-align: center;
+}
+
+.card-title{
+  display: inline;
+}
+
+.navbar-brand{
+  font-size: 1.75rem;
+}
+
+.nav-item{
+  font-size: 1.25rem;
+}

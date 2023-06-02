@@ -22,7 +22,7 @@ router.get('/fetchnotes', fetchuser, async (req, res) => {
 
 
 
-// ROUTE 2: Add a new notes using: POST "/api/auth/addnote". Login required
+// ROUTE 2: Add a new notes using: POST "/api/notes/addnote". Login required
 
 router.post("/addnotes", fetchuser, [
 
@@ -62,10 +62,10 @@ router.post("/addnotes", fetchuser, [
 
 
 
-// ROUTE 3: Update a note using: POST "/api/auth/updatenotes". Login required
+// ROUTE 3: Update a note using: PUT "/api/notes/updatenotes/id". Login required
 
 router.put('/updatenotes/:id', fetchuser, async (req, res) => {
-  
+
   try {
     const { title, description, tag } = req.body;
 
@@ -74,14 +74,59 @@ router.put('/updatenotes/:id', fetchuser, async (req, res) => {
     if (title) { newNote.title = title };
     if (description) { newNote.description = description };
     if (tag) { newNote.tag = tag };
-    
-    const note = Notes.findById(req.parmas.id);
-    if (!note) { res.status(404).send('Not Found') };
-    
+
+    const note = await Notes.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send('Not Found')
+    };
+
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).send("Request Not Allowed")
+    }
+
     // Find Note to update it
-    // const note = Notes.findByIdAndUpdate(req.user.id, newNote);
+    const notes = await Notes.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true });
+
+    res.send(notes);
   }
-  
+
+  catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error")
+  }
+
+});
+
+
+
+
+
+// ROUTE 4: Delete a note using: DELETE "/api/notes/updatenotes". Login required
+
+router.delete('/deletenotes/:id', fetchuser, async (req, res) => {
+
+  try {
+
+    const note = await Notes.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send('Not Found')
+    };
+
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).send("Request Not Allowed")
+    }
+
+    // Find Note to Delete it
+    Notes.findByIdAndDelete(req.params.id, (err, result) => {
+      if (err) {
+        res.send({'Error:': err});
+      } else {
+        res.send({'Deleted document:': result});
+      }
+    });
+
+  }
+
   catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error")
